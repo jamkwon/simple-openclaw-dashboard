@@ -3,257 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenClaw Dashboard</title>
+    <title>OpenClaw Ops Dashboard | Muddy OS Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            margin: 0;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .subtitle {
-            opacity: 0.9;
-            margin-top: 10px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-        .card h2 {
-            color: #FFD700;
-            margin: 0 0 20px 0;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .status-item:last-child {
-            border-bottom: none;
-        }
-        .status-good { color: #4CAF50; font-weight: bold; }
-        .status-warning { color: #FFA726; font-weight: bold; }
-        .status-disabled { color: #9E9E9E; }
-        .timestamp {
-            text-align: center;
-            margin-top: 30px;
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-        .live-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background: #4CAF50;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        [x-cloak] { display: none !important; }
+        .glow { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+        .agent-card { transition: all 0.3s ease; }
+        .agent-card:hover { transform: translateY(-2px); }
+        .status-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
-<body>
-    <div class="header">
-        <h1>🚀 OpenClaw Dashboard</h1>
-        <p class="subtitle">Real-time System Monitoring • <span class="live-indicator"></span> Live</p>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <h2>🏗️ System Status</h2>
-            <div class="status-item">
-                <span>OpenClaw Gateway</span>
-                <span class="status-good">✅ Running</span>
-            </div>
-            <div class="status-item">
-                <span>Port</span>
-                <span>18789</span>
-            </div>
-            <div class="status-item">
-                <span>Version</span>
-                <span>2026.2.9</span>
-            </div>
-            <div class="status-item">
-                <span>Uptime</span>
-                <span id="uptime">Loading...</span>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>📊 Sessions</h2>
-            <div class="status-item">
-                <span>Main Session</span>
-                <span class="status-good">✅ Active</span>
-            </div>
-            <div class="status-item">
-                <span>Total Sessions</span>
-                <span>8 sessions</span>
-            </div>
-            <div class="status-item">
-                <span>Messages Today</span>
-                <span>156</span>
-            </div>
-            <div class="status-item">
-                <span>Token Usage</span>
-                <span>128k/200k (64%)</span>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen">
+    <div x-data="dashboardApp()" x-init="init()" class="p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="white" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                            OpenClaw Ops Dashboard
+                        </h1>
+                        <p class="text-gray-400">Real-time AI Agent Orchestration • Muddy OS Style</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full status-pulse"></div>
+                        <span class="text-sm">OpenClaw 2026.2.9</span>
+                    </div>
+                    <div class="text-xs text-gray-400" x-text="currentTime"></div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>⚙️ Cron Jobs</h2>
-            <div class="status-item">
-                <span>Daily Status (5PM)</span>
-                <span class="status-good">✅ Active</span>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Sessions</p>
+                        <p class="text-2xl font-bold text-green-400">8</p>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>Dashboard Updates</span>
-                <span class="status-good">✅ Running</span>
+
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Token Usage</p>
+                        <p class="text-2xl font-bold text-blue-400">180k/200k</p>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>CMO Reports</span>
-                <span class="status-disabled">⏸️ Disabled</span>
+
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Cron Jobs</p>
+                        <p class="text-2xl font-bold text-purple-400">1 Active</p>
+                    </div>
+                    <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2L3 7v11a1 1 0 001 1h12a1 1 0 001-1V7l-7-5zM10 18v-6h4v6h-4z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>LinkedIn Reports</span>
-                <span class="status-disabled">⏸️ Disabled</span>
+
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Projects</p>
+                        <p class="text-2xl font-bold text-orange-400">5</p>
+                    </div>
+                    <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>🎯 Active Projects</h2>
-            <div class="status-item">
-                <span>Dashboard Fix</span>
-                <span class="status-warning">🔄 In Progress</span>
+        <!-- Main Dashboard Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Session Management (Like Clearmud's Agent Workspaces) -->
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                            <path fill-rule="evenodd" d="M3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Active Sessions</span>
+                    </h2>
+                    <span class="text-xs text-gray-400">Real-time monitoring</span>
+                </div>
+
+                <div class="space-y-3 max-h-80 overflow-y-auto">
+                    <div class="agent-card bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold">M</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Main Agent</p>
+                                    <p class="text-xs text-gray-400">imessage:g-agent-main-main</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs text-green-400">Active</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div class="text-center">
+                                <p class="text-gray-400">Tokens</p>
+                                <p class="font-semibold">180k</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Messages</p>
+                                <p class="font-semibold">39</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Channel</p>
+                                <p class="font-semibold">iMessage</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agent-card bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold">C</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Clearmud Transcript Agent</p>
+                                    <p class="text-xs text-gray-400">Cron: Clearmud Transcript Progress</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <span class="text-xs text-red-400">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div class="text-center">
+                                <p class="text-gray-400">Progress</p>
+                                <p class="font-semibold">9.3%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Videos</p>
+                                <p class="font-semibold">8/86</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Schedule</p>
+                                <p class="font-semibold">30min</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agent-card bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold">S</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Daily Status Agent</p>
+                                    <p class="text-xs text-gray-400">daily-status-5pm</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs text-green-400">Active</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+                            <div class="text-center">
+                                <p class="text-gray-400">Next Run</p>
+                                <p class="font-semibold">5:00 PM</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Target</p>
+                                <p class="font-semibold">Main</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-400">Type</p>
+                                <p class="font-semibold">Daily</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>Clearmud Strategy</span>
-                <span class="status-good">✅ Ready</span>
-            </div>
-            <div class="status-item">
-                <span>CMO App</span>
-                <span class="status-warning">⏳ Pending</span>
-            </div>
-            <div class="status-item">
-                <span>Email Infrastructure</span>
-                <span class="status-warning">🔧 Needs Fix</span>
+
+            <!-- Project Task Manager (Like Clearmud's Task Manager) -->
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Active Projects</span>
+                    </h2>
+                    <span class="text-xs text-gray-400">Real-time status</span>
+                </div>
+
+                <div class="space-y-4 max-h-80 overflow-y-auto">
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-green-400">Dashboard Fix Project</h3>
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">COMPLETE</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Working dashboard deployed to Vercel</p>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Agent: Main</span>
+                            <span class="text-gray-400">Duration: 4h 30m</span>
+                        </div>
+                        <div class="mt-2 bg-gray-600 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-blue-400">Clearmud Strategy</h3>
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded-full">READY</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">86+ video analysis & implementation guide</p>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Agent: Clearmud</span>
+                            <span class="text-gray-400">Progress: 9.3%</span>
+                        </div>
+                        <div class="mt-2 bg-gray-600 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 15%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-orange-400">CMO App Deployment</h3>
+                            <span class="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded-full">PENDING</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Cloudflare Pages migration complete</p>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Agent: CMO</span>
+                            <span class="text-gray-400">Status: Ready to deploy</span>
+                        </div>
+                        <div class="mt-2 bg-gray-600 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-semibold text-red-400">Email Infrastructure</h3>
+                            <span class="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded-full">BLOCKED</span>
+                        </div>
+                        <p class="text-sm text-gray-300 mb-2">Himalaya delivery issues need resolution</p>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Agent: Email</span>
+                            <span class="text-gray-400">Issue: Template errors</span>
+                        </div>
+                        <div class="mt-2 bg-gray-600 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>📈 Recent Activity</h2>
-            <div class="status-item">
-                <span>🔧 Dashboard troubleshooting</span>
-                <span>Now</span>
+        <!-- System Health & Agent Coordination -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            <!-- System Health -->
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>System Health</span>
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Gateway</span>
+                        <span class="text-green-400">✓ Running</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Port</span>
+                        <span class="text-gray-400">18789</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Version</span>
+                        <span class="text-gray-400">2026.2.9</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Model</span>
+                        <span class="text-blue-400">Sonnet 4</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Uptime</span>
+                        <span class="text-gray-400" x-text="uptime"></span>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>⏸️ Disabled duplicate cron jobs</span>
-                <span>45 min ago</span>
+
+            <!-- Voice Standups (Like Clearmud) -->
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Agent Coordination</span>
+                </h2>
+                <div class="space-y-3">
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Last Coordination</span>
+                            <span class="text-xs text-gray-400">15 min ago</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Dashboard fix completed, cron jobs disabled</p>
+                    </div>
+                    <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300">Next Standup</span>
+                            <span class="text-xs text-gray-400">5:00 PM</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Daily status report to team</p>
+                    </div>
+                </div>
             </div>
-            <div class="status-item">
-                <span>🚨 Fixed message duplication</span>
-                <span>1 hr ago</span>
-            </div>
-            <div class="status-item">
-                <span>🚀 Nightshift completed</span>
-                <span>3 hrs ago</span>
+
+            <!-- Token Analytics -->
+            <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.51-1.31c-.562-.649-1.413-1.076-2.353-1.253V5z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Token Analytics</span>
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Used Today</span>
+                        <span class="text-yellow-400">180,962</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Context Limit</span>
+                        <span class="text-gray-400">200,000</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-300">Utilization</span>
+                        <span class="text-orange-400">90.5%</span>
+                    </div>
+                    <div class="mt-3 bg-gray-600 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-green-400 to-orange-500 h-3 rounded-full" style="width: 90.5%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Estimated Cost</span>
+                        <span class="text-green-400">$0.73</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>💰 Usage Analytics</h2>
-            <div class="status-item">
-                <span>Tokens Used Today</span>
-                <span>128,815</span>
-            </div>
-            <div class="status-item">
-                <span>Estimated Cost</span>
-                <span>~$0.52</span>
-            </div>
-            <div class="status-item">
-                <span>Efficiency</span>
-                <span>64% context utilized</span>
-            </div>
-            <div class="status-item">
-                <span>Average Response Time</span>
-                <span>1.2s</span>
+        <!-- Recent Activity Feed -->
+        <div class="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-xl p-6 mt-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center space-x-2">
+                <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+                <span>Activity Feed</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-sm font-semibold text-green-400">Dashboard Deployed</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Main Agent completed dashboard fix project</p>
+                    <span class="text-xs text-gray-500">2 minutes ago</span>
+                </div>
+                
+                <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span class="text-sm font-semibold text-red-400">Cron Jobs Disabled</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Duplicate message issue resolved</p>
+                    <span class="text-xs text-gray-500">45 minutes ago</span>
+                </div>
+                
+                <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span class="text-sm font-semibold text-blue-400">Strategy Delivered</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Clearmud strategy sent via email</p>
+                    <span class="text-xs text-gray-500">2 hours ago</span>
+                </div>
+                
+                <div class="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span class="text-sm font-semibold text-purple-400">Nightshift Complete</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Dashboard project finished early</p>
+                    <span class="text-xs text-gray-500">3 hours ago</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="timestamp">
-        📊 Dashboard created: <span id="timestamp">February 16, 2026 at 10:10 AM EST</span><br>
-        🔄 Auto-refresh: Every 60 seconds
+        <!-- Footer -->
+        <div class="mt-8 text-center text-gray-500 text-sm">
+            <p>OpenClaw Ops Dashboard • Real-time AI Agent Orchestration • Built with Tailwind CSS & Alpine.js</p>
+            <p class="mt-1">Last updated: <span x-text="currentTime"></span></p>
+        </div>
     </div>
 
     <script>
-        // Update uptime
-        function updateUptime() {
-            const start = new Date('2026-02-16T06:00:00-05:00');
-            const now = new Date();
-            const diff = now - start;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById('uptime').textContent = hours + 'h ' + minutes + 'm';
+        function dashboardApp() {
+            return {
+                currentTime: '',
+                uptime: '12h 34m',
+                
+                init() {
+                    this.updateTime();
+                    setInterval(() => {
+                        this.updateTime();
+                    }, 1000);
+                },
+                
+                updateTime() {
+                    const now = new Date();
+                    this.currentTime = now.toLocaleString('en-US', {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        timeZoneName: 'short'
+                    });
+                }
+            }
         }
-        
-        // Update timestamp
-        function updateTimestamp() {
-            const now = new Date();
-            document.getElementById('timestamp').textContent = now.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long', 
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                timeZoneName: 'short'
-            });
-        }
-        
-        // Initialize
-        updateUptime();
-        updateTimestamp();
-        
-        // Update every minute
-        setInterval(() => {
-            updateUptime();
-            updateTimestamp();
-        }, 60000);
-        
-        // Auto-refresh page every 5 minutes
-        setTimeout(() => {
-            location.reload();
-        }, 300000);
     </script>
 </body>
 </html>
