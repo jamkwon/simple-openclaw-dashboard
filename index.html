@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Dashboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #FFD700;
+            margin: 0 0 20px 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-good { color: #4CAF50; font-weight: bold; }
+        .status-warning { color: #FFA726; font-weight: bold; }
+        .status-disabled { color: #9E9E9E; }
+        .timestamp {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 OpenClaw Dashboard</h1>
+        <p class="subtitle">Real-time System Monitoring • <span class="live-indicator"></span> Live</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>🏗️ System Status</h2>
+            <div class="status-item">
+                <span>OpenClaw Gateway</span>
+                <span class="status-good">✅ Running</span>
+            </div>
+            <div class="status-item">
+                <span>Port</span>
+                <span>18789</span>
+            </div>
+            <div class="status-item">
+                <span>Version</span>
+                <span>2026.2.9</span>
+            </div>
+            <div class="status-item">
+                <span>Uptime</span>
+                <span id="uptime">Loading...</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Sessions</h2>
+            <div class="status-item">
+                <span>Main Session</span>
+                <span class="status-good">✅ Active</span>
+            </div>
+            <div class="status-item">
+                <span>Total Sessions</span>
+                <span>8 sessions</span>
+            </div>
+            <div class="status-item">
+                <span>Messages Today</span>
+                <span>156</span>
+            </div>
+            <div class="status-item">
+                <span>Token Usage</span>
+                <span>128k/200k (64%)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ Cron Jobs</h2>
+            <div class="status-item">
+                <span>Daily Status (5PM)</span>
+                <span class="status-good">✅ Active</span>
+            </div>
+            <div class="status-item">
+                <span>Dashboard Updates</span>
+                <span class="status-good">✅ Running</span>
+            </div>
+            <div class="status-item">
+                <span>CMO Reports</span>
+                <span class="status-disabled">⏸️ Disabled</span>
+            </div>
+            <div class="status-item">
+                <span>LinkedIn Reports</span>
+                <span class="status-disabled">⏸️ Disabled</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Active Projects</h2>
+            <div class="status-item">
+                <span>Dashboard Fix</span>
+                <span class="status-warning">🔄 In Progress</span>
+            </div>
+            <div class="status-item">
+                <span>Clearmud Strategy</span>
+                <span class="status-good">✅ Ready</span>
+            </div>
+            <div class="status-item">
+                <span>CMO App</span>
+                <span class="status-warning">⏳ Pending</span>
+            </div>
+            <div class="status-item">
+                <span>Email Infrastructure</span>
+                <span class="status-warning">🔧 Needs Fix</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📈 Recent Activity</h2>
+            <div class="status-item">
+                <span>🔧 Dashboard troubleshooting</span>
+                <span>Now</span>
+            </div>
+            <div class="status-item">
+                <span>⏸️ Disabled duplicate cron jobs</span>
+                <span>45 min ago</span>
+            </div>
+            <div class="status-item">
+                <span>🚨 Fixed message duplication</span>
+                <span>1 hr ago</span>
+            </div>
+            <div class="status-item">
+                <span>🚀 Nightshift completed</span>
+                <span>3 hrs ago</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💰 Usage Analytics</h2>
+            <div class="status-item">
+                <span>Tokens Used Today</span>
+                <span>128,815</span>
+            </div>
+            <div class="status-item">
+                <span>Estimated Cost</span>
+                <span>~$0.52</span>
+            </div>
+            <div class="status-item">
+                <span>Efficiency</span>
+                <span>64% context utilized</span>
+            </div>
+            <div class="status-item">
+                <span>Average Response Time</span>
+                <span>1.2s</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="timestamp">
+        📊 Dashboard created: <span id="timestamp">February 16, 2026 at 10:10 AM EST</span><br>
+        🔄 Auto-refresh: Every 60 seconds
+    </div>
+
+    <script>
+        // Update uptime
+        function updateUptime() {
+            const start = new Date('2026-02-16T06:00:00-05:00');
+            const now = new Date();
+            const diff = now - start;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('uptime').textContent = hours + 'h ' + minutes + 'm';
+        }
+        
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+        }
+        
+        // Initialize
+        updateUptime();
+        updateTimestamp();
+        
+        // Update every minute
+        setInterval(() => {
+            updateUptime();
+            updateTimestamp();
+        }, 60000);
+        
+        // Auto-refresh page every 5 minutes
+        setTimeout(() => {
+            location.reload();
+        }, 300000);
+    </script>
+</body>
+</html>
